@@ -24,8 +24,6 @@
 #include <boost/algorithm/string.hpp>
 #include <opencv2/opencv.hpp>
 
-#include <development/mavlink.h>
-
 using namespace std;
 using namespace gazebo;
 using namespace cv;
@@ -313,6 +311,12 @@ void CameraManagerPlugin::_handle_message(mavlink_message_t *msg, struct sockadd
             case MAV_CMD_IMAGE_STOP_CAPTURE:
                 _handle_stop_take_photo(msg, srcaddr);
                 break;
+            case MAV_CMD_VIDEO_START_CAPTURE:
+                _handle_start_video_capture(msg, srcaddr);
+                break;
+            case MAV_CMD_VIDEO_STOP_CAPTURE:
+                _handle_stop_video_capture(msg, srcaddr);
+                break;
             case MAV_CMD_REQUEST_CAMERA_INFORMATION:
                 _handle_camera_info(msg, srcaddr);
                 break;
@@ -335,7 +339,6 @@ void CameraManagerPlugin::_handle_message(mavlink_message_t *msg, struct sockadd
                 _handle_set_camera_mode(msg, srcaddr);
                 break;
             case MAV_CMD_SET_CAMERA_ZOOM:
-                //Control the Zoom of the camera
                 _handle_camera_zoom(msg, srcaddr);
                 break;
             case MAV_CMD_RESET_CAMERA_SETTINGS:
@@ -524,7 +527,7 @@ void CameraManagerPlugin::_handle_take_photo(const mavlink_message_t *pMsg, stru
     } else {
         gzerr << "Bad Start Capture argments: " << cmd.param2 << " " << cmd.param3 << endl;
         _send_cmd_ack(pMsg->sysid, pMsg->compid,
-                      MAV_CMD_IMAGE_START_CAPTURE, MAV_RESULT_UNSUPPORTED, srcaddr);
+                      MAV_CMD_IMAGE_START_CAPTURE, MAV_RESULT_DENIED, srcaddr);
     }
 }
 
@@ -538,6 +541,55 @@ void CameraManagerPlugin::_handle_stop_take_photo(const mavlink_message_t *pMsg,
     _captureMode = CAPTURE_DISABLED;
     _send_cmd_ack(pMsg->sysid, pMsg->compid,
                   MAV_CMD_IMAGE_STOP_CAPTURE, MAV_RESULT_ACCEPTED, srcaddr);
+}
+
+void CameraManagerPlugin::_handle_start_video_capture(const mavlink_message_t *pMsg, struct sockaddr* srcaddr)
+{
+    gzdbg << "Handle Start Video Capture" << endl;
+
+    mavlink_command_long_t cmd;
+    mavlink_msg_command_long_decode(pMsg, &cmd);
+    std::lock_guard<std::mutex> guard(_captureMutex);
+
+    if (_captureMode != CAPTURE_DISABLED) {
+        // We are already capturing
+        _send_cmd_ack(pMsg->sysid, pMsg->compid, MAV_CMD_VIDEO_START_CAPTURE, MAV_RESULT_TEMPORARILY_REJECTED, srcaddr);
+        return;
+    }
+
+    if (cmd.param1 != 0 || cmd.param2 != 0) {
+        gzerr << "VIDEO_START_CAPTURE: param1 and param2 must be 0\n";
+        _send_cmd_ack(pMsg->sysid, pMsg->compid, MAV_CMD_VIDEO_START_CAPTURE, MAV_RESULT_DENIED, srcaddr);
+        return;
+    }
+
+    _captureMode = CAPTURE_VIDEO;
+    _start_video_capture_time = std::chrono::high_resolution_clock::now();
+    _send_cmd_ack(pMsg->sysid, pMsg->compid, MAV_CMD_VIDEO_START_CAPTURE, MAV_RESULT_ACCEPTED, srcaddr);
+}
+
+void CameraManagerPlugin::_handle_stop_video_capture(const mavlink_message_t *pMsg, struct sockaddr* srcaddr)
+{
+    gzdbg << "Handle Stop Video Capture" << endl;
+
+    mavlink_command_long_t cmd;
+    mavlink_msg_command_long_decode(pMsg, &cmd);
+    std::lock_guard<std::mutex> guard(_captureMutex);
+
+    if (cmd.param1 != 0) {
+        gzerr << "VIDEO_STOP_CAPTURE: param1 must be 0\n";
+        _send_cmd_ack(pMsg->sysid, pMsg->compid, MAV_CMD_VIDEO_START_CAPTURE, MAV_RESULT_DENIED, srcaddr);
+        return;
+    }
+
+    if (_captureMode != CAPTURE_VIDEO) {
+        // We are not capturing
+        _send_cmd_ack(pMsg->sysid, pMsg->compid, MAV_CMD_VIDEO_START_CAPTURE, MAV_RESULT_TEMPORARILY_REJECTED, srcaddr);
+        return;
+    }
+
+    _captureMode = CAPTURE_DISABLED;
+    _send_cmd_ack(pMsg->sysid, pMsg->compid, MAV_CMD_VIDEO_STOP_CAPTURE, MAV_RESULT_ACCEPTED, srcaddr);
 }
 
 void CameraManagerPlugin::_handle_request_camera_capture_status(const mavlink_message_t *pMsg, struct sockaddr* srcaddr)
@@ -560,34 +612,24 @@ void CameraManagerPlugin::_handle_camera_info(const mavlink_message_t *pMsg, str
 {
     gzdbg << "Send camera info" << endl;
     _send_cmd_ack(pMsg->sysid, pMsg->compid, MAV_CMD_REQUEST_CAMERA_INFORMATION, MAV_RESULT_ACCEPTED, srcaddr);
-    static const char vendor[MAVLINK_MSG_CAMERA_INFORMATION_FIELD_VENDOR_NAME_LEN] = "PX4.io";
-    static const char model[MAVLINK_MSG_CAMERA_INFORMATION_FIELD_MODEL_NAME_LEN] = "Gazebo";
-    static const char uri[MAVLINK_MSG_CAMERA_INFORMATION_FIELD_CAM_DEFINITION_URI_LEN] = {};
-    uint32_t camera_capabilities = CAMERA_CAP_FLAGS_CAPTURE_IMAGE | CAMERA_CAP_FLAGS_CAPTURE_VIDEO |
-            CAMERA_CAP_FLAGS_HAS_MODES | CAMERA_CAP_FLAGS_HAS_BASIC_ZOOM |
-            CAMERA_CAP_FLAGS_HAS_VIDEO_STREAM;
+
+    mavlink_camera_information_t camera_information{};
+    std::strncpy((char *)camera_information.vendor_name, "PX4.io", sizeof(camera_information.vendor_name));
+    std::strncpy((char *)camera_information.model_name, "Gazebo", sizeof(camera_information.model_name));
+    camera_information.firmware_version = 0x01;
+    camera_information.focal_length = 50.f;
+    camera_information.sensor_size_h = 35.f;
+    camera_information.sensor_size_v = 24.f;
+    camera_information.resolution_h = _width;
+    camera_information.resolution_v = _height;
+    camera_information.flags = CAMERA_CAP_FLAGS_CAPTURE_IMAGE
+                                | CAMERA_CAP_FLAGS_CAPTURE_VIDEO
+                                | CAMERA_CAP_FLAGS_HAS_MODES
+                                | CAMERA_CAP_FLAGS_HAS_BASIC_ZOOM
+                                | CAMERA_CAP_FLAGS_HAS_VIDEO_STREAM;;
 
     mavlink_message_t msg;
-    mavlink_msg_camera_information_pack_chan(
-        _systemID,
-        _componentID,
-        MAVLINK_COMM_1,
-        &msg,
-        0,                         // time_boot_ms
-        (const uint8_t *)vendor,   // const uint8_t * vendor_name
-        (const uint8_t *)model,    // const uint8_t * model_name
-        0x01,                      // uint32_t firmware_version
-        50.0f,                     // float focal_lenth
-        35.0f,                     // float  sensor_size_h
-        24.0f,                     // float  sensor_size_v
-        _width,                    // resolution_h
-        _height,                   // resolution_v
-        0,                         // lens_id
-        camera_capabilities,       // CAP_FLAGS
-        0,                         // Camera Definition Version
-        uri,                       // URI
-        0                          // uint8_t gimbal_device_id
-    );
+    mavlink_msg_camera_information_encode_chan(_systemID, _componentID, MAVLINK_COMM_1, &msg, &camera_information);
     _send_mavlink_message(&msg, srcaddr);
 }
 
@@ -613,7 +655,8 @@ void CameraManagerPlugin::_handle_request_camera_settings(const mavlink_message_
         0,                      // time_boot_ms
         _mode,                  // Camera Mode
         1.0E2 * (_zoom - 1.0)/ (_maxZoom - 1.0),                    // Zoom level
-        NAN);                   // Focus level
+        NAN,                    // Focus level
+	0);                     // MAVLink camera with its own component ID
     _send_mavlink_message(&msg, srcaddr);
 }
 
@@ -634,26 +677,25 @@ void CameraManagerPlugin::_handle_request_video_stream_status(const mavlink_mess
     mavlink_message_t msg;
     mavlink_msg_video_stream_status_pack_chan(
         _systemID,
-        _componentID,                                     // Component ID
+        _componentID,                                           // Component ID
         MAVLINK_COMM_1,
         &msg,
         static_cast<uint8_t>(sid),                              // Stream ID
         VIDEO_STREAM_STATUS_FLAGS_RUNNING,                      // Flags (It's always running)
         30,                                                     // Frame rate
-        _width,                                                  // Horizontal resolution
+        _width,                                                 // Horizontal resolution
         _height,                                                // Vertical resolution
         2048,                                                   // Bit rate (made up)
         0,                                                      // Rotation (none)
-        90                                                      // FOV (made up)
-    );
+        90,                                                     // FOV (made up)
+	0);                                                     // MAVLink camera with its own component ID
+
     _send_mavlink_message(&msg, srcaddr);
 }
 
 void CameraManagerPlugin::_handle_request_video_stream_information(const mavlink_message_t *pMsg, struct sockaddr* srcaddr)
 {
     gzdbg << "Send videostream information" << endl;
-    char name[MAVLINK_MSG_VIDEO_STREAM_INFORMATION_FIELD_NAME_LEN] = {};
-    snprintf(name, MAVLINK_MSG_VIDEO_STREAM_INFORMATION_FIELD_NAME_LEN, "Visual Spectrum");
     mavlink_command_long_t cmd;
     mavlink_msg_command_long_decode(pMsg, &cmd);
     //-- Should we execute the command
@@ -666,25 +708,21 @@ void CameraManagerPlugin::_handle_request_video_stream_information(const mavlink
     // ACK command received and accepted
     _send_cmd_ack(pMsg->sysid, pMsg->compid, MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION, MAV_RESULT_ACCEPTED, srcaddr);
 
+    mavlink_video_stream_information_t video_stream_information{};
+    video_stream_information.stream_id = 1;
+    video_stream_information.count = 1;
+    video_stream_information.type = VIDEO_STREAM_TYPE_RTPUDP;
+    video_stream_information.flags = VIDEO_STREAM_STATUS_FLAGS_RUNNING; // It's always running
+    video_stream_information.framerate = 30;
+    video_stream_information.resolution_h = _width;
+    video_stream_information.resolution_v = _height;
+    video_stream_information.bitrate = 2048;
+    video_stream_information.hfov = 90; // made up
+    std::strncpy(video_stream_information.name, "Visual Spectrum", sizeof(video_stream_information.name));
+    std::strncpy(video_stream_information.uri, _videoURI.c_str(), sizeof(video_stream_information.uri));
+
     mavlink_message_t msg;
-    mavlink_msg_video_stream_information_pack_chan(
-        _systemID,
-        _componentID,                         // Component ID
-        MAVLINK_COMM_1,
-        &msg,
-        1,                                          // Stream ID
-        1,                                          // Stream count
-        VIDEO_STREAM_TYPE_RTPUDP,                   // Stream type
-        VIDEO_STREAM_STATUS_FLAGS_RUNNING,          // Flags (It's always running)
-        30,                                         // Frame rate
-        _width,                                     // Horizontal resolution
-        _height,                                    // Vertical resolution
-        2048,                                       // Bit rate
-        0,                                          // Rotation (none)
-        90,                                         // FOV (made up)
-        name,
-        _videoURI.c_str()
-    );
+    mavlink_msg_video_stream_information_encode_chan(_systemID, _componentID, MAVLINK_COMM_1, &msg, &video_stream_information);
     _send_mavlink_message(&msg, srcaddr);
 }
 
@@ -712,6 +750,10 @@ void CameraManagerPlugin::_handle_camera_zoom(const mavlink_message_t *pMsg, str
     if (cmd.param1 == ZOOM_TYPE_CONTINUOUS) {
         _zoom = std::max(std::min(float(_zoom + 0.1 * cmd.param2), _maxZoom), 1.0f);
         _zoom_cmd = cmd.param2;
+    } else if (cmd.param1 == ZOOM_TYPE_RANGE) {
+	auto zoomRange = std::min(std::max(cmd.param2, 0.0f), 100.0f);
+	_zoom = 1.0f + (zoomRange / 100.0f) * (_maxZoom - 1.0f);
+        _camera->SetHFOV(_hfov / _zoom);
     } else {
         _zoom = std::max(std::min(float(_zoom + 0.1 * cmd.param2), _maxZoom), 1.0f);
         _camera->SetHFOV(_hfov / _zoom);
@@ -721,9 +763,21 @@ void CameraManagerPlugin::_handle_camera_zoom(const mavlink_message_t *pMsg, str
 void CameraManagerPlugin::_send_capture_status(struct sockaddr* srcaddr)
 {
     _captureMutex.lock();
-    int status = _captureMode == CAPTURE_DISABLED ? 0 : (_captureMode == CAPTURE_SINGLE ? 1 : 3);
+    uint8_t image_status = 0; // idle
+    uint8_t video_status = 0; // idle
+    uint32_t recording_time_ms = 0;
+    if (_captureMode == CAPTURE_SINGLE) {
+        image_status = 1; // active
+    } else if (_captureMode == CAPTURE_ELAPSED) {
+        image_status = 3; // time lapse
+    } else if (_captureMode == CAPTURE_VIDEO) {
+        video_status = 1; // active
+        auto current_time = std::chrono::high_resolution_clock::now();
+        recording_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - _start_video_capture_time).count();
+    }
     float interval = CAPTURE_ELAPSED ? (float)_captureInterval : 0.0f;
     _captureMutex.unlock();
+
     gzdbg << "Send capture status" << endl;
     float available_mib = 0.0f;
     boost::filesystem::space_info si = boost::filesystem::space(".");
@@ -742,12 +796,13 @@ void CameraManagerPlugin::_send_capture_status(struct sockaddr* srcaddr)
         MAVLINK_COMM_1,
         &msg,
         current_time.Double() * 1e3,
-        status,                                 // image status
-        0,                                      // video status (Idle)
+        image_status,                           // image status
+        video_status,                           // video status
         interval,                               // image interval
-        0,                                      // recording time in ms
+        recording_time_ms,                      // recording time in ms
         available_mib,                          // available storage capacity
-        _imageCounter);                         // total number of images
+        _imageCounter,                          // total number of images
+	0);                                     // MAVLink camera with its own component ID
     _send_mavlink_message(&msg, srcaddr);
 }
 
