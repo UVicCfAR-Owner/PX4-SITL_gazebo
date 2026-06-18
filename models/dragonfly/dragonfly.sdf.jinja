@@ -64,6 +64,20 @@
 
   </link>
 
+  <link name="wings_assembly">
+    <pose>0 0 0 0 0 0</pose>
+    
+    <!-- Physical properties of the combined wings -->
+    <inertial>
+      <mass>0.02</mass> <!-- Estimated mass for 4 small fins -->
+      <inertia>
+        <ixx>0.0001</ixx>
+        <iyy>0.0001</iyy>
+        <izz>0.0001</izz>
+      </inertia>
+    </inertial>
+   </link>
+
     <link name='/imu_link'>
       <pose>0 0 0 0 0 0</pose>
       <inertial>
@@ -319,6 +333,13 @@
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
+    
+	<joint name="wings_to_base_joint" type="fixed">
+	  <parent>base_link</parent>
+	  <child>wings_assembly</child>
+	  <!-- The physics engine rigidly locks these together, 
+	       automatically passing all lift and drag forces to the parent link -->
+	</joint>
 
 
 <!-- PLUGINS -->
@@ -344,7 +365,7 @@
       <motorConstant>2.781e-06</motorConstant>
       <momentConstant>0.02317</momentConstant>
       
-      <rotorDragCoefficient>0.0001</rotorDragCoefficient>
+      <rotorDragCoefficient>0.00005</rotorDragCoefficient>
       <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
       <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
       
@@ -367,7 +388,7 @@
       <motorConstant>2.781e-06</motorConstant>
       <momentConstant>0.02317</momentConstant>
       
-      <rotorDragCoefficient>0.0001</rotorDragCoefficient>
+      <rotorDragCoefficient>0.00005</rotorDragCoefficient>
       <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
       <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
       
@@ -390,7 +411,7 @@
       <motorConstant>2.781e-06</motorConstant>
       <momentConstant>0.02317</momentConstant>
       
-      <rotorDragCoefficient>0.0001</rotorDragCoefficient>
+      <rotorDragCoefficient>0.00005</rotorDragCoefficient>
       <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
       <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
       
@@ -413,12 +434,28 @@
       <motorConstant>2.781e-06</motorConstant>
       <momentConstant>0.02317</momentConstant>
       
-      <rotorDragCoefficient>0.0001</rotorDragCoefficient>
+      <rotorDragCoefficient>0.00005</rotorDragCoefficient>
       <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
       <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
       
       <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
       <motorSpeedPubTopic>/motor_speed/3</motorSpeedPubTopic>
+    </plugin>
+    
+    <!-- Combined Wing Effect -->
+    <plugin name="aerodynamics_all_wings" filename="libLiftDragPlugin.so">
+      <a0>0.0</a0>
+      <cla>5.3</cla>            <!-- Eli's Data is 0.0926 per deg, converted to rad-->
+      <cda>0.11</cda>           <!-- Eli's Data is 0.002  per deg, converted to rad-->
+      <alpha_stall>0.262</alpha_stall> <!-- 15 degrees in radians -->
+      <cla_stall>0.5</cla_stall> <!-- Estimated Lift Slope Loss -->
+      <cda_stall>0.4</cda_stall> <!-- Estimated Drag Increase-->
+      <cp>0 0 -0.002</cp>
+      <area>0.0271</area> <!-- Total Combined Effective Area, accounting for dihedral (cos^2) and shadowing-->
+      <air_density>1.225</air_density>
+      <forward>0 0 1</forward>          
+      <upward>1 0 0</upward>   
+      <link_name>wings_assembly</link_name>
     </plugin>
 
     <include>
