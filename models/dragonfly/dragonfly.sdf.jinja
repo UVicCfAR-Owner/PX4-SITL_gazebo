@@ -45,19 +45,20 @@
       </collision>
 
       <visual name='base_link_inertia_visual'>
-        <pose>0 0 0 0 0 0 </pose>
+        <pose>0 0 0 0 0 -1.5708 </pose>
         <geometry>
           <mesh>
             <uri>model://dragonfly/meshes/body.stl</uri>
             <scale>0.001 0.001 0.001</scale>
           </mesh>
         </geometry>
-        <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>__default__</uri>
-          </script>
-        </material>
+
+	<material>
+	  <ambient>0.55 0.25 0.05 1</ambient>
+	  <diffuse>0.75 0.35 0.08 1</diffuse>
+	  <specular>0.15 0.15 0.15 1</specular>
+	</material>
+
       </visual>
       <gravity>1</gravity>
       <velocity_decay/>
@@ -456,6 +457,8 @@
       <forward>0 0 1</forward>          
       <upward>1 0 0</upward>   
       <link_name>wings_assembly</link_name>
+      <robotNamespace></robotNamespace>
+      <windSubTopic>world_wind</windSubTopic>
     </plugin>
 
     <include>
