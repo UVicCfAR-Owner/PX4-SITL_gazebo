@@ -366,7 +366,7 @@
       <motorConstant>2.781e-06</motorConstant>
       <momentConstant>0.02317</momentConstant>
       
-      <rotorDragCoefficient>0.00005</rotorDragCoefficient>
+      <rotorDragCoefficient>0.000025</rotorDragCoefficient>
       <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
       <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
       
@@ -389,7 +389,7 @@
       <motorConstant>2.781e-06</motorConstant>
       <momentConstant>0.02317</momentConstant>
       
-      <rotorDragCoefficient>0.00005</rotorDragCoefficient>
+      <rotorDragCoefficient>0.000025</rotorDragCoefficient>
       <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
       <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
       
@@ -412,7 +412,7 @@
       <motorConstant>2.781e-06</motorConstant>
       <momentConstant>0.02317</momentConstant>
       
-      <rotorDragCoefficient>0.00005</rotorDragCoefficient>
+      <rotorDragCoefficient>0.000025</rotorDragCoefficient>
       <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
       <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
       
@@ -435,7 +435,7 @@
       <motorConstant>2.781e-06</motorConstant>
       <momentConstant>0.02317</momentConstant>
       
-      <rotorDragCoefficient>0.00005</rotorDragCoefficient>
+      <rotorDragCoefficient>0.000025</rotorDragCoefficient>
       <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
       <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
       
@@ -447,10 +447,10 @@
     <plugin name="aerodynamics_all_wings" filename="libLiftDragPlugin.so">
       <a0>0.0</a0>
       <cla>5.3</cla>            <!-- Eli's Data is 0.0926 per deg, converted to rad-->
-      <cda>0.11</cda>           <!-- Eli's Data is 0.002  per deg, converted to rad-->
+      <cda>0.13</cda>           <!-- Eli's Data is 0.0023  per deg, converted to rad-->
       <alpha_stall>0.262</alpha_stall> <!-- 15 degrees in radians -->
       <cla_stall>0.5</cla_stall> <!-- Estimated Lift Slope Loss -->
-      <cda_stall>0.4</cda_stall> <!-- Estimated Drag Increase-->
+      <cda_stall>1.3</cda_stall> <!-- Estimated Drag Increase-->
       <cp>0 0 -0.002</cp>
       <area>0.0271</area> <!-- Total Combined Effective Area, accounting for dihedral (cos^2) and shadowing-->
       <air_density>1.225</air_density>
