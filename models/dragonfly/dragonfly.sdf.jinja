@@ -12,12 +12,12 @@
     <pose>0 0 0 0 0 0</pose>
     <inertial>
       <pose>0 0 0 0 0 0</pose>
-      <mass>1.239</mass>
+      <mass>1.33</mass>
 
       <inertia>
-        <ixx>0.012753</ixx>
-        <iyy>0.012764</iyy>
-        <izz>0.010681</izz>
+        <ixx>0.011</ixx>
+        <iyy>0.011</iyy>
+        <izz>0.0093</izz>
         <ixy>0.0</ixy>
         <ixz>0.0</ixz>
         <iyz>0.0</iyz>
@@ -70,7 +70,7 @@
     
     <!-- Physical properties of the combined wings -->
     <inertial>
-      <mass>0.02</mass> <!-- Estimated mass for 4 small fins -->
+      <mass>0.02</mass> 
       <inertia>
         <ixx>0.0001</ixx>
         <iyy>0.0001</iyy>
@@ -359,14 +359,14 @@
       <turningDirection>ccw</turningDirection>
       <motorNumber>0</motorNumber>
       
-      <timeConstantUp>0.17</timeConstantUp>
-      <timeConstantDown>0.17</timeConstantDown>
+      <timeConstantUp>0.025</timeConstantUp>
+      <timeConstantDown>0.035</timeConstantDown>
       
-      <maxRotVelocity>2410</maxRotVelocity>
-      <motorConstant>3.0e-06</motorConstant>
-      <momentConstant>0.02317</momentConstant>
+      <maxRotVelocity>2300</maxRotVelocity>
+      <motorConstant>3.20e-06</motorConstant>
+      <momentConstant>0.0201</momentConstant>
       
-      <rotorDragCoefficient>0.00002</rotorDragCoefficient>
+      <rotorDragCoefficient>0.00004</rotorDragCoefficient>
       <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
       <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
       
@@ -382,14 +382,14 @@
       <turningDirection>ccw</turningDirection>
       <motorNumber>1</motorNumber>
       
-      <timeConstantUp>0.17</timeConstantUp>
-      <timeConstantDown>0.17</timeConstantDown>
+      <timeConstantUp>0.025</timeConstantUp>
+      <timeConstantDown>0.035</timeConstantDown>
       
-      <maxRotVelocity>2410</maxRotVelocity>
-      <motorConstant>3.0e-06</motorConstant>
-      <momentConstant>0.02317</momentConstant>
+      <maxRotVelocity>2300</maxRotVelocity>
+      <motorConstant>3.20e-06</motorConstant>
+      <momentConstant>0.0201</momentConstant>
       
-      <rotorDragCoefficient>0.00002</rotorDragCoefficient>
+      <rotorDragCoefficient>0.00004</rotorDragCoefficient>
       <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
       <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
       
@@ -405,14 +405,14 @@
       <turningDirection>cw</turningDirection>
       <motorNumber>2</motorNumber>
       
-      <timeConstantUp>0.17</timeConstantUp>
-      <timeConstantDown>0.17</timeConstantDown>
+      <timeConstantUp>0.025</timeConstantUp>
+      <timeConstantDown>0.035</timeConstantDown>
       
-      <maxRotVelocity>2410</maxRotVelocity>
-      <motorConstant>3.0e-06</motorConstant>
-      <momentConstant>0.02317</momentConstant>
+      <maxRotVelocity>2300</maxRotVelocity>
+      <motorConstant>3.20e-06</motorConstant>
+      <momentConstant>0.0201</momentConstant>
       
-      <rotorDragCoefficient>0.00002</rotorDragCoefficient>
+      <rotorDragCoefficient>0.00004</rotorDragCoefficient>
       <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
       <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
       
@@ -428,14 +428,14 @@
       <turningDirection>cw</turningDirection>
       <motorNumber>3</motorNumber>
       
-      <timeConstantUp>0.17</timeConstantUp>
-      <timeConstantDown>0.17</timeConstantDown>
+      <timeConstantUp>0.025</timeConstantUp>
+      <timeConstantDown>0.035</timeConstantDown>
       
-      <maxRotVelocity>2410</maxRotVelocity>
-      <motorConstant>3.0e-06</motorConstant> 
-      <momentConstant>0.02317</momentConstant>
+      <maxRotVelocity>2300</maxRotVelocity>
+      <motorConstant>3.20e-06</motorConstant>
+      <momentConstant>0.0201</momentConstant>
       
-      <rotorDragCoefficient>0.00002</rotorDragCoefficient>
+      <rotorDragCoefficient>0.00004</rotorDragCoefficient>
       <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
       <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
       
@@ -449,7 +449,7 @@
       <cla>3.0</cla>            <!-- Eli's Data is 0.0926 per deg, converted to rad. Reduced from 5.3-->
       <cda>0.13</cda>           <!-- Eli's Data is 0.0023  per deg, converted to rad. -->
       <alpha_stall>0.262</alpha_stall> <!-- 15 degrees in radians -->
-      <cla_stall>0.2</cla_stall> <!-- Estimated Lift Slope Loss -->
+      <cla_stall>0.0</cla_stall> <!-- Estimated Lift Slope Loss -->
       <cda_stall>0.5</cda_stall> <!-- Estimated Drag Increase-->
       <cp>0 0 -0.002</cp>
       <area>0.0271</area> <!-- Total Combined Effective Area, accounting for dihedral (cos^2) and shadowing-->
@@ -467,7 +467,7 @@
       <cla>3.0</cla>            <!-- Eli's Data is 0.0926 per deg, converted to rad. Reduced from 5.3-->
       <cda>0.13</cda>           <!-- Eli's Data is 0.0023  per deg, converted to rad. Reduced-->
       <alpha_stall>0.262</alpha_stall> <!-- 15 degrees in radians -->
-      <cla_stall>0.2</cla_stall> <!-- Estimated Lift Slope Loss -->
+      <cla_stall>0.0</cla_stall> <!-- Estimated Lift Slope Loss -->
       <cda_stall>0.5</cda_stall> <!-- Estimated Drag Increase-->
       <cp>0 0 -0.002</cp>
       <area>0.0271</area> <!-- Total Combined Effective Area, accounting for dihedral (cos^2) and shadowing-->
