@@ -13,12 +13,12 @@
         <pose>0 0 0 0 0 0</pose>
         <mass>5.0</mass>
         <inertia>
-          <ixx>0.6447551563</ixx>
+          <ixx>0.4816</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>3.28113795553</iyy>
+          <iyy>0.5962</iyy>
           <iyz>0</iyz>
-          <izz>2.6721585563</izz>
+          <izz>1.0043</izz>
         </inertia>
       </inertial>
       
@@ -62,7 +62,7 @@
     </link>
     
     <link name='otter/imu_link'>
-      <pose>0.164206 0 0.001750 0 0 0</pose>
+      <pose>0.164 0 0.00995 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 0 0</pose>
         <mass>0.015</mass>
@@ -95,7 +95,7 @@
     <gravity>1</gravity>
     <velocity_decay/>
     
-      <pose>0.375 -0.375 0.095465 0.0872665 0 0</pose>
+      <pose>0.375 -0.375 0.041765 0.0872665 0 0</pose>
       
      <inertial>
      <pose>0 0 0 0 0 0</pose>
@@ -132,7 +132,7 @@
     <gravity>1</gravity>
     <velocity_decay/>
     
-      <pose>-0.375 0.375 0.095465 -0.0872665 0 0</pose>
+      <pose>-0.375 0.375 0.041765-0.0872665 0 0</pose>
       
      <inertial>
      <pose>0 0 0 0 0 0</pose>
@@ -168,7 +168,7 @@
     <gravity>1</gravity>
     <velocity_decay/>
     
-      <pose>0.375 0.375 0.095465 -0.0872665 0 0</pose>
+      <pose>0.375 0.375 0.041765 -0.0872665 0 0</pose>
       
      <inertial>
      <pose>0 0 0 0 0 0</pose>
@@ -205,7 +205,7 @@
     <gravity>1</gravity>
     <velocity_decay/>
     
-      <pose>-0.375 -0.375 0.095465 0.0872665 0 0</pose>
+      <pose>-0.375 -0.375 0.041765 0.0872665 0 0</pose>
       
      <inertial>
      <pose>0 0 0 0 0 0</pose>
@@ -237,7 +237,7 @@
     </link>
  
      <link name='rotor_pusher'>
-      <pose>-0.248803 0 0.010 0 1.57 0</pose>
+      <pose>-0.249664 0 0.0182 0 1.57 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>0.005</mass>
@@ -276,7 +276,7 @@
     <!-- Control Surfaces --> 
     
     <link name="right_aileron">
-     <pose> -0.109025 -0.613750 0.027318 0 0 0</pose>
+     <pose> -0.1090222 -0.613750 0.019118 0 0 0</pose>
       <inertial>
         <mass>0.00000001</mass>
         <inertia>
@@ -307,7 +307,7 @@
     </link>  
 
     <link name="left_aileron">
-     <pose> -0.109025 0.613750 0.027318 0 0 0</pose>
+     <pose> -0.1090222 0.613750 0.019118 0 0 0</pose>
       <inertial>
         <mass>0.00000001</mass>
         <inertia>
@@ -338,7 +338,7 @@
     </link> 
     
     <link name="right_rudder">
-     <pose>-0.826667 -0.375 0.310797 0 0 0</pose>
+     <pose>-0.826864 -0.375 0.302597 0 0 0</pose>
       <inertial>
         <mass>0.00000001</mass>
         <inertia>
@@ -369,7 +369,7 @@
     </link> 
     
     <link name="left_rudder">
-     <pose>-0.826667 0.375 0.310797 0 0 0</pose>
+     <pose>-0.826864 0.375 0.302597 0 0 0</pose>
       <inertial>
         <mass>0.00000001</mass>
         <inertia>
@@ -400,7 +400,7 @@
     </link>         
     
     <link name="right_elevator">
-     <pose>-0.763478 -0.174750 0.015246 0 0 0</pose>
+     <pose>-0.763550 -0.174750 0.007046 0 0 0</pose>
       <inertial>
         <mass>0.00000001</mass>
         <inertia>
@@ -431,7 +431,7 @@
     </link>
     
     <link name="left_elevator">
-     <pose>-0.763478 0.174750 0.015246 0 0 0</pose>
+     <pose>-0.763550 0.174750 0.007046 0 0 0</pose>
       <inertial>
         <mass>0.00000001</mass>
         <inertia>
@@ -709,7 +709,7 @@
       <cla_stall>-7.032866</cla_stall>
       <cda_stall>0.997135</cda_stall>
       <cma_stall>0</cma_stall>        
-      <cp>-0.07606 0.4275 0.07</cp>          
+      <cp>0.0341 0.3603 0.0168</cp>          
       <area>0.243902439</area>
       <air_density>1.2041</air_density>
       
@@ -735,7 +735,7 @@
       <cla_stall>-7.032866</cla_stall>
       <cda_stall>0.997135</cda_stall>
       <cma_stall>0</cma_stall>                  
-      <cp>-0.07606 -0.4275 0.07</cp>            
+      <cp>0.0341 -0.3603 0.0168</cp>            
       <area>0.243902439</area>
       <air_density>1.2041</air_density>    
        
@@ -761,7 +761,7 @@
       <cla_stall>-7.951306</cla_stall>
       <cda_stall>2.059087</cda_stall>
       <cma_stall>0</cma_stall> 
-      <cp>-0.5935 0.174750 0.050711</cp>
+      <cp>-0.6742 0.1615 -0.0025</cp>
       <area>0.061</area>      
       <air_density>1.2041</air_density>
       <forward>0.999657 0 -0.0261769</forward>
@@ -785,7 +785,7 @@
       <cla_stall>-7.951306</cla_stall>
       <cda_stall>2.059087</cda_stall>
       <cma_stall>0</cma_stall>            
-      <cp>-0.5935 -0.174750 0.050711</cp>
+      <cp>-0.6742 -0.1615 -0.0025</cp>
       <area>0.061</area>      
       <air_density>1.2041</air_density>
       <forward>0.999657 0 -0.0261769</forward>
@@ -810,7 +810,7 @@
       <cla_stall>-7.951306</cla_stall>
       <cda_stall>2.059087</cda_stall>
       <cma_stall>0</cma_stall>          
-      <cp>-0.742 0.375 0.2103</cp>
+      <cp>-0.7361 0.375 0.1763</cp>
       <area>0.02</area>
       <air_density>1.2041</air_density>
       <forward>1 0 0</forward>
@@ -834,7 +834,7 @@
       <cla_stall>-7.951306</cla_stall>
       <cda_stall>2.059087</cda_stall>
       <cma_stall>0</cma_stall>           
-      <cp>-0.742 -0.375 0.2103</cp>
+      <cp>-0.7361 -0.375 0.1763</cp>
       <area>0.02</area>
       <air_density>1.2041</air_density>
       <forward>1 0 0</forward>
