@@ -1,0 +1,508 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="heron">
+
+    <static>false</static>
+    <self_collide>false</self_collide>
+
+    <!-- ================================================= -->
+    <!-- Main fuselage and fixed arms                      -->
+    <!-- Gazebo frame: X forward, Y left, Z up             -->
+    <!-- ================================================= -->
+    <link name="base_link">
+      <pose>0 0 0 0 0 0</pose>
+      <inertial>
+        <mass>22</mass>
+        <inertia>
+          <ixx>1.5</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.8</iyy>
+          <iyz>0</iyz>
+          <izz>3.0</izz>
+        </inertia>
+      </inertial>
+
+      <!-- Central fuselage -->
+      <visual name="fuselage">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box><size>0.35 0.22 0.10</size></box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.25 0.30 1</ambient>
+          <diffuse>0.22 0.25 0.30 1</diffuse>
+        </material>
+      </visual>
+      <collision name="fuselage_collision">
+        <geometry>
+          <box><size>0.35 0.22 0.20</size></box>
+        </geometry>
+      </collision>
+
+      <!-- Front-right arm (Adjusted to meet X: 0.1, Y: -0.65) -->
+      <visual name="front_right_arm">
+        <pose>0.05 -0.38 0 0 0 -1.4056</pose>
+        <geometry>
+          <box><size>0.665 0.035 0.035</size></box>
+        </geometry>
+        <material>
+          <ambient>0.35 0.35 0.38 1</ambient>
+          <diffuse>0.35 0.35 0.38 1</diffuse>
+        </material>
+      </visual>
+
+      <!-- Front-left arm (Adjusted to meet X: 0.1, Y: 0.65) -->
+      <visual name="front_left_arm">
+        <pose>0.05 0.38 0 0 0 1.4056</pose>
+        <geometry>
+          <box><size>0.665 0.035 0.035</size></box>
+        </geometry>
+        <material>
+          <ambient>0.35 0.35 0.38 1</ambient>
+          <diffuse>0.35 0.35 0.38 1</diffuse>
+        </material>
+      </visual>
+
+      <!-- Rear arm -->
+      <visual name="rear_arm">
+        <pose>-0.25 0 0 0 0 0</pose>
+        <geometry>
+          <box><size>0.52 0.04 0.035</size></box>
+        </geometry>
+        <material>
+          <ambient>0.35 0.35 0.38 1</ambient>
+          <diffuse>0.35 0.35 0.38 1</diffuse>
+        </material>
+      </visual>
+    </link>
+
+    <!-- ================================================= -->
+    <!-- Front-right tilt assembly                         -->
+    <!-- ================================================= -->
+    <link name="rotor_0_mount">
+      <pose>0.1 -0.65 0 0 0 0</pose>
+      <inertial>
+        <mass>0.14</mass>
+        <inertia>
+          <ixx>0.001</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.001</iyy><iyz>0</iyz><izz>0.001</izz>
+        </inertia>
+      </inertial>
+      <visual name="motor_can">
+        <geometry><cylinder><radius>0.065</radius><length>0.10</length></cylinder></geometry>
+        <material>
+          <ambient>0.8 0.25 0.12 1</ambient>
+          <diffuse>0.8 0.25 0.12 1</diffuse>
+        </material>
+      </visual>
+    </link>
+
+    <link name="rotor_0">
+      <pose>0.1 -0.65 0.065 0 0 0</pose>
+      <inertial>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz>
+        </inertia>
+      </inertial>
+      
+      <visual name="rotor_0_viz">
+        <pose>-0.405 0.054 -0.02 1.571 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://heron/meshes/CW_prop.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.8 0.25 0.12 1</ambient>
+          <diffuse>0.8 0.25 0.12 1</diffuse>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="tilt_joint_0" type="revolute">
+      <parent>base_link</parent>
+      <child>rotor_0_mount</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1.571</lower>
+          <upper>1.571</upper>
+          <effort>10</effort>
+          <velocity>2.5</velocity>
+        </limit>
+        <dynamics>
+          <friction>0.5</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+
+    <joint name="rotor_0_joint" type="revolute">
+      <parent>rotor_0_mount</parent>
+      <child>rotor_0</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit><lower>-1e16</lower><upper>1e16</upper></limit>
+        <dynamics><damping>0</damping><friction>0</friction></dynamics>
+      </axis>
+    </joint>
+
+    <!-- ================================================= -->
+    <!-- Front-left tilt assembly                          -->
+    <!-- ================================================= -->
+    <link name="rotor_1_mount">
+      <pose>0.1 0.65 0 0 0 0</pose>
+      <inertial>
+        <mass>0.14</mass>
+        <inertia>
+          <ixx>0.001</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.001</iyy><iyz>0</iyz><izz>0.001</izz>
+        </inertia>
+      </inertial>
+      <visual name="motor_can">
+        <geometry><cylinder><radius>0.065</radius><length>0.10</length></cylinder></geometry>
+        <material>
+          <ambient>0.12 0.35 0.85 1</ambient>
+          <diffuse>0.12 0.35 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+
+    <link name="rotor_1">
+      <pose>0.1 0.65 0.065 0 0 0</pose>
+      <inertial>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz>
+        </inertia>
+      </inertial>
+      <visual name="rotor_1_viz">
+        <pose>-0.405 0.054 -0.02 1.571 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://heron/meshes/CCW_prop.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.12 0.35 0.85 1</ambient>
+          <diffuse>0.12 0.35 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="tilt_joint_1" type="revolute">
+      <parent>base_link</parent>
+      <child>rotor_1_mount</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1.571</lower>
+          <upper>1.571</upper>
+          <effort>10</effort>
+          <velocity>2.5</velocity>
+        </limit>
+        <dynamics>
+          <friction>0.5</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+
+    <joint name="rotor_1_joint" type="revolute">
+      <parent>rotor_1_mount</parent>
+      <child>rotor_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit><lower>-1e16</lower><upper>1e16</upper></limit>
+        <dynamics><damping>0</damping><friction>0</friction></dynamics>
+      </axis>
+    </joint>
+
+    <!-- ================================================= -->
+    <!-- Rear fixed assembly                               -->
+    <!-- ================================================= -->
+    <link name="rotor_2_mount">
+      <pose>-0.50 0 0 0 0 0</pose>
+      <inertial>
+        <mass>0.14</mass>
+        <inertia>
+          <ixx>0.001</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.001</iyy><iyz>0</iyz><izz>0.001</izz>
+        </inertia>
+      </inertial>
+      <visual name="motor_can">
+        <geometry><cylinder><radius>0.065</radius><length>0.10</length></cylinder></geometry>
+        <material>
+          <ambient>0.2 0.65 0.25 1</ambient>
+          <diffuse>0.2 0.65 0.25 1</diffuse>
+        </material>
+      </visual>
+      <collision name="motor_collision">
+        <geometry><cylinder><radius>0.065</radius><length>0.10</length></cylinder></geometry>
+      </collision>
+    </link>
+    
+    <link name="rotor_2">
+      <pose>-0.50 0 0.065 0 0 0</pose>
+      <inertial>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz>
+        </inertia>
+      </inertial>
+      <visual name="propeller">
+        <pose>-0.405 0.054 -0.02 1.571 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://heron/meshes/CCW_prop.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.2 0.65 0.25 1</ambient>
+          <diffuse>0.2 0.65 0.25 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    
+    <joint name="rotor_2_mount_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>rotor_2_mount</child>
+    </joint>
+    
+    <joint name="rotor_2_joint" type="revolute">
+      <parent>rotor_2_mount</parent>
+      <child>rotor_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit><lower>-1e16</lower><upper>1e16</upper></limit>
+        <dynamics><damping>0</damping><friction>0</friction></dynamics>
+      </axis>
+    </joint>
+
+    <!-- ================================================= -->
+    <!-- Sensors                                           -->
+    <!-- ================================================= -->
+    <link name="imu_link">
+      <pose>0.164 0 0.00995 0 0 0</pose>
+      <inertial>
+        <mass>0.015</mass>
+        <inertia>
+          <ixx>1e-05</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>1e-05</iyy><iyz>0</iyz><izz>1e-05</izz>
+        </inertia>
+      </inertial>
+    </link>
+    <joint name="imu_fixed_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>imu_link</child>
+    </joint>
+
+    <include>
+      <uri>model://airspeed</uri>
+      <pose>0.2 0 0 0 0 0</pose>
+      <name>airspeed</name>
+    </include>  
+    <joint name='airspeed_joint' type='fixed'>
+      <child>airspeed::link</child>
+      <parent>base_link</parent>
+    </joint>
+    
+    <include>
+      <uri>model://gps</uri>
+      <pose>0.133270 0 0.043250 0 0 0</pose>
+      <name>gps</name>
+    </include>
+    <joint name='gps_joint' type='fixed'>
+      <child>gps::link</child>
+      <parent>base_link</parent>
+    </joint>
+     
+	<!-- Motor Models -->
+    <plugin name='front_right_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace></robotNamespace>
+      <jointName>rotor_0_joint</jointName>
+      <linkName>rotor_0</linkName>      
+      <turningDirection>cw</turningDirection>          
+      <timeConstantUp>0.0804</timeConstantUp>
+      <timeConstantDown>0.0626</timeConstantDown>      
+      <maxRotVelocity>132</maxRotVelocity>     
+      <motorConstant>0.009</motorConstant>      
+      <momentConstant>0.03</momentConstant>               
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>0</motorNumber>     
+      <rotorDragCoefficient>0.000106428</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/0</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>5</rotorVelocitySlowdownSim>
+    </plugin>
+  
+    <plugin name='front_left_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace></robotNamespace>
+      <jointName>rotor_1_joint</jointName>
+      <linkName>rotor_1</linkName>
+      <turningDirection>ccw</turningDirection>          
+      <timeConstantUp>0.0804</timeConstantUp>
+      <timeConstantDown>0.0626</timeConstantDown>      
+      <maxRotVelocity>132</maxRotVelocity>     
+      <motorConstant>0.009</motorConstant>      
+      <momentConstant>0.03</momentConstant>                
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>1</motorNumber>
+      <rotorDragCoefficient>0.000106428</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/1</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>5</rotorVelocitySlowdownSim>
+    </plugin>
+	
+    <plugin name='rear_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace></robotNamespace>
+      <jointName>rotor_2_joint</jointName>
+      <linkName>rotor_2</linkName>
+      <turningDirection>ccw</turningDirection>          
+      <timeConstantUp>0.0804</timeConstantUp>
+      <timeConstantDown>0.0626</timeConstantDown>      
+      <maxRotVelocity>132</maxRotVelocity>     
+      <motorConstant>0.009</motorConstant>      
+      <momentConstant>0.03</momentConstant>                 
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>2</motorNumber>
+      <rotorDragCoefficient>0.000106428</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/2</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>5</rotorVelocitySlowdownSim>
+    </plugin>
+
+    <!-- Comms -->
+	<plugin name='groundtruth_plugin' filename='libgazebo_groundtruth_plugin.so'>
+      <robotNamespace/>
+    </plugin>
+    
+    <plugin name='magnetometer_plugin' filename='libgazebo_magnetometer_plugin.so'>
+      <robotNamespace/>
+      <pubRate>100</pubRate>
+      <noiseDensity>0.0004</noiseDensity>
+      <randomWalk>6.4e-06</randomWalk>
+      <biasCorrelationTime>600</biasCorrelationTime>
+      <magTopic>/mag</magTopic>
+    </plugin>
+    
+    <plugin name='barometer_plugin' filename='libgazebo_barometer_plugin.so'>
+      <robotNamespace/>
+      <pubRate>50</pubRate>
+      <baroTopic>/baro</baroTopic>
+    </plugin>
+    
+    <plugin name='mavlink_interface' filename='libgazebo_mavlink_interface.so'>
+      <robotNamespace></robotNamespace>
+      <imuSubTopic>/imu</imuSubTopic>
+      <magSubTopic>/mag</magSubTopic>
+      <baroSubTopic>/baro</baroSubTopic>
+      <mavlink_addr>INADDR_ANY</mavlink_addr>
+      <mavlink_tcp_port>4560</mavlink_tcp_port>
+      <mavlink_udp_port>14560</mavlink_udp_port>
+      <serialEnabled>0</serialEnabled>
+      <serialDevice>/dev/ttyACM0</serialDevice>
+      <baudRate>921600</baudRate>
+      <qgc_addr>INADDR_ANY</qgc_addr>
+      <qgc_udp_port>14550</qgc_udp_port>
+      <sdk_addr>INADDR_ANY</sdk_addr>
+      <sdk_udp_port>14540</sdk_udp_port>
+      <hil_mode>0</hil_mode>
+      <hil_state_level>false</hil_state_level>
+      <enable_lockstep>true</enable_lockstep>
+      <use_tcp>true</use_tcp>
+      <motorSpeedCommandPubTopic>/gazebo/command/motor_speed</motorSpeedCommandPubTopic>
+      
+      <control_channels>
+        <channel name="rotor0">
+          <input_index>0</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>135</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>rotor_0_joint</joint_name>
+        </channel>
+        <channel name="rotor1">
+          <input_index>1</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>135</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>rotor_1_joint</joint_name>
+        </channel>
+        <channel name="rotor2">
+          <input_index>2</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>135</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>rotor_2_joint</joint_name>
+        </channel>
+        
+        <!-- Front-right tilt servo -->
+        <channel name="tilt0">   
+  		  <input_index>3</input_index>
+          <input_offset>0.785398</input_offset>
+          <input_scaling>0.785398</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>position</joint_control_type>
+          <joint_name>tilt_joint_0</joint_name>
+           <joint_control_pid>
+            <p>10</p>
+            <i>0.5</i>
+            <d>0.5</d>
+            <iMax>1.0</iMax>
+            <iMin>-1.0</iMin>
+            <cmdMax>10</cmdMax>
+            <cmdMin>-10</cmdMin>
+            <errMax>1.0</errMax>
+          </joint_control_pid>
+        </channel>
+
+        <!-- Front-left tilt servo -->
+        <channel name="tilt1">   
+  		  <input_index>4</input_index>
+          <input_offset>0.785398</input_offset>
+          <input_scaling>0.785398</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>position</joint_control_type>
+          <joint_name>tilt_joint_1</joint_name>
+           <joint_control_pid>
+            <p>10</p>
+            <i>0.5</i>
+            <d>0.5</d>
+            <iMax>1.0</iMax>
+            <iMin>-1.0</iMin>
+            <cmdMax>10</cmdMax>
+            <cmdMin>-10</cmdMin>
+            <errMax>1.0</errMax>
+          </joint_control_pid>
+        </channel>
+	  </control_channels>
+	</plugin>
+	
+    <plugin name='gazebo_imu_plugin' filename='libgazebo_imu_plugin.so'>
+      <robotNamespace></robotNamespace>
+      <linkName>imu_link</linkName>
+      <imuTopic>/imu</imuTopic>
+    </plugin>
+        
+  </model>
+</sdf>
