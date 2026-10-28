@@ -27,55 +27,100 @@
       <visual name="fuselage">
         <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box><size>0.35 0.22 0.10</size></box>
+          <box><size>0.6 0.22 0.10</size></box>
         </geometry>
         <material>
-          <ambient>0.22 0.25 0.30 1</ambient>
-          <diffuse>0.22 0.25 0.30 1</diffuse>
+          <ambient>0.3 0.3 0.30 1</ambient>
+          <diffuse>0.3 0.3 0.30 1</diffuse>
         </material>
       </visual>
       <collision name="fuselage_collision">
         <geometry>
-          <box><size>0.35 0.22 0.20</size></box>
+          <box><size>0.6 0.22 0.20</size></box>
         </geometry>
       </collision>
 
-      <!-- Front-right arm (Adjusted to meet X: 0.1, Y: -0.65) -->
+      <!-- Front-right arm -->
       <visual name="front_right_arm">
         <pose>0.05 -0.38 0 0 0 -1.4056</pose>
         <geometry>
           <box><size>0.665 0.035 0.035</size></box>
         </geometry>
         <material>
-          <ambient>0.35 0.35 0.38 1</ambient>
-          <diffuse>0.35 0.35 0.38 1</diffuse>
+          <ambient>0.6 0.6 0.6 1</ambient>
+          <diffuse>0.6 0.6 0.6 1</diffuse>
         </material>
       </visual>
+      
+      <visual name="front_right_arm_2">
+        <pose>0.1 -0.7 0 0 0 -1.571</pose>
+        <geometry>
+          <box><size>1.309 0.035 0.035</size></box>
+        </geometry>
+        <material>
+          <ambient>0.6 0.6 0.6 1</ambient>
+          <diffuse>0.6 0.6 0.6 1</diffuse>
+        </material>
+      </visual>
+      <collision name="right_arm_collision">
+        <pose>0.1 -0.7 0 0 0 -1.571</pose>
+        <geometry>
+          <box>
+          	<size>1.309 0.035 0.035</size>
+          </box>
+        </geometry>
+      </collision>
 
-      <!-- Front-left arm (Adjusted to meet X: 0.1, Y: 0.65) -->
+
+      <!-- Front-left arm -->
       <visual name="front_left_arm">
         <pose>0.05 0.38 0 0 0 1.4056</pose>
         <geometry>
           <box><size>0.665 0.035 0.035</size></box>
         </geometry>
         <material>
-          <ambient>0.35 0.35 0.38 1</ambient>
-          <diffuse>0.35 0.35 0.38 1</diffuse>
+          <ambient>0.6 0.6 0.6 1</ambient>
+          <diffuse>0.6 0.6 0.6 1</diffuse>
         </material>
       </visual>
+      <visual name="front_left_arm_2">
+        <pose>0.1 0.7 0 0 0 1.571</pose>
+        <geometry>
+          <box><size>1.309 0.035 0.035</size></box>
+        </geometry>
+        <material>
+          <ambient>0.6 0.6 0.6 1</ambient>
+          <diffuse>0.6 0.6 0.6 1</diffuse>
+        </material>
+      </visual>
+      <collision name="left_arm_collision">
+        <pose>0.1 0.7 0 0 0 1.571</pose>
+        <geometry>
+          <box>
+          	<size>1.309 0.035 0.035</size>
+          </box>
+        </geometry>
+      </collision>
 
       <!-- Rear arm -->
       <visual name="rear_arm">
-        <pose>-0.25 0 0 0 0 0</pose>
+        <pose>-0.5 0 0 0 0 0</pose>
         <geometry>
-          <box><size>0.52 0.04 0.035</size></box>
+          <box><size>1.0 0.04 0.035</size></box>
         </geometry>
         <material>
-          <ambient>0.35 0.35 0.38 1</ambient>
-          <diffuse>0.35 0.35 0.38 1</diffuse>
+          <ambient>0.6 0.6 0.6 1</ambient>
+          <diffuse>0.6 0.6 0.6 1</diffuse>
         </material>
       </visual>
     </link>
+    
+	<collision name="rear_arm_collision">
+        <pose>-0.5 0 0 0 0 0</pose>
+        <geometry>
+          <box><size>1.0 0.04 0.035</size></box>
+		</geometry>
+	</collision>
 
     <!-- ================================================= -->
     <!-- Front-right tilt assembly                         -->
@@ -129,10 +174,10 @@
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-1.571</lower>
+          <lower>0.0</lower>
           <upper>1.571</upper>
           <effort>10</effort>
-          <velocity>2.5</velocity>
+          <velocity>0.5</velocity>
         </limit>
         <dynamics>
           <friction>0.5</friction>
@@ -204,10 +249,10 @@
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-1.571</lower>
+          <lower>0.0</lower>
           <upper>1.571</upper>
           <effort>10</effort>
-          <velocity>2.5</velocity>
+          <velocity>0.5</velocity>
         </limit>
         <dynamics>
           <friction>0.5</friction>
@@ -311,7 +356,7 @@
 
     <include>
       <uri>model://airspeed</uri>
-      <pose>0.2 0 0 0 0 0</pose>
+      <pose>0.32 0 0 0 0 0</pose>
       <name>airspeed</name>
     </include>  
     <joint name='airspeed_joint' type='fixed'>
@@ -373,8 +418,8 @@
       <turningDirection>ccw</turningDirection>          
       <timeConstantUp>0.0804</timeConstantUp>
       <timeConstantDown>0.0626</timeConstantDown>      
-      <maxRotVelocity>132</maxRotVelocity>     
-      <motorConstant>0.009</motorConstant>      
+      <maxRotVelocity>115</maxRotVelocity>     
+      <motorConstant>0.01</motorConstant>      
       <momentConstant>0.03</momentConstant>                 
       <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
       <motorNumber>2</motorNumber>
@@ -447,7 +492,7 @@
         <channel name="rotor2">
           <input_index>2</input_index>
           <input_offset>0</input_offset>
-          <input_scaling>135</input_scaling>
+          <input_scaling>115</input_scaling>
           <zero_position_disarmed>0</zero_position_disarmed>
           <zero_position_armed>0</zero_position_armed>
           <joint_control_type>velocity</joint_control_type>
